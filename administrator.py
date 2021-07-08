@@ -3,14 +3,17 @@ from tkinter import ttk
 from tkinter import *
 import tkinter as tk
 from PIL import ImageTk, Image
-
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import smtplib
+from tkinter import messagebox
 
 mydb = mysql.connector.connect(user='lifechoices', password='@Lifechoices1234', host='127.0.0.1', database='dbLifechoicesOnline', auth_plugin='mysql_native_password')
 mycursor = mydb.cursor(buffered=True)
 
 root = Tk()
 root.title("VISITOR")
-root.geometry('1100x800')
+root.geometry('1100x850')
 
 
 # ===============Adding tabs on the window========================
@@ -94,6 +97,7 @@ btnKin.place(x=100, y=430)
 
 #  ==============================FUNCTIONS FOR ADDING DELETING AND DISPLAYING DATA IN TAB1=======================
 def fetch_dataUser():
+    clear()
     selected = tblUser.focus()
     temp = tblUser.item(selected, 'values')
     edtNamet1.insert(0, temp[0],)
@@ -104,32 +108,48 @@ def fetch_dataUser():
 
 
 def delete():
-    row_id = tblUser.focus()
-    tblUser.delete(row_id)
-    mycursor.execute('DELETE FROM tblUser WHERE User_id='+edtUser_idt1.get())
-    mycursor.execute('DELETE FROM tblNextOfKin WHERE User_id='+edtUser_idt1.get())
-    mydb.commit()
+    try:
+        row_id = tblUser.focus()
+        tblUser.delete(row_id)
+        mycursor.execute('DELETE FROM tblUser WHERE ID="'+edtIDt1.get()+'"')
+        mycursor.execute('DELETE FROM tblNextOfKin WHERE Mobile="'+edtMobilet2.get()+'"')
+        mydb.commit()
+        messagebox.showinfo("", "successfully deleted")
+    except:
+        messagebox.showerror("", "Failed to delete the record")
 
 
 def insertUser():
-    mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("'+edtNamet1.get()+'","'+edtSurnamet1.get()+'","'+edtIDt1.get()+'","'+edtMobilet1.get()+'")')
-    tblUser.insert("", 'end', values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get()))
-    mydb.commit()
-    mycursor.execute('SELECT User_id FROM tblUser WHERE ID="'+edtIDt1.get()+'"')
-    row = mycursor.fetchall()
-    edtUser_idt1.insert(0, row)
+    try:
+        mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("'+edtNamet1.get()+'","'+edtSurnamet1.get()+'","'+edtIDt1.get()+'","'+edtMobilet1.get()+'")')
+        tblUser.insert("", 'end', values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get()))
+        mydb.commit()
+        mycursor.execute('SELECT User_id FROM tblUser WHERE ID="'+edtIDt1.get()+'"')
+        row = mycursor.fetchall()
+        edtUser_idt1.insert(0, row)
+        messagebox.showinfo("", "Successfully added")
+    except:
+        messagebox.showerror("", "Failed to add the record")
 
 
 def updateUser():
-    selected = tblUser.focus()
-    temp = tblUser.item(selected, 'values')
-    tblUser.item(selected, values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get(), temp[4], temp[5], temp[6]))
-    mycursor.execute('UPDATE tblUser SET Name="'+edtNamet1.get()+'", Surname="'+edtSurnamet1.get()+'", Mobile="'+edtMobilet1.get()+'", ID="'+edtIDt1.get()+'" WHERE User_id='+edtUser_idt1.get())
-    mydb.commit()
+    try:
+        selected = tblUser.focus()
+        temp = tblUser.item(selected, 'values')
+        tblUser.item(selected, values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get(), temp[4], temp[5], temp[6]))
+        mycursor.execute('UPDATE tblUser SET Name="'+edtNamet1.get()+'", Surname="'+edtSurnamet1.get()+'", Mobile="'+edtMobilet1.get()+'", ID="'+edtIDt1.get()+'" WHERE User_id='+edtUser_idt1.get())
+        mydb.commit()
+        messagebox.showinfo("", "Successfully updated")
+    except:
+        messagebox.showerror("", "Failed to insert")
 
 
 #  ==============================FUNCTIONS FOR ADDING DELETING AND DISPLAYING DATA IN TAB2=======================
+
+
+
 def fetch_dataKin():
+    clear_kin()
     selected = tblNextOfKin.focus()
     temp = tblNextOfKin.item(selected, 'values')
     edtNamet2.insert(0, temp[0],)
@@ -139,21 +159,29 @@ def fetch_dataKin():
 
 
 def insertKin():
-    mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile) VALUES ("'+edtNamet2.get()+'","'+edtSurnamet2.get()+'","'+edtMobilet2.get()+'")')
+    try:
+        mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile) VALUES ("'+edtNamet2.get()+'","'+edtSurnamet2.get()+'","'+edtMobilet2.get()+'")')
     # mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobilet2.get()+'"')
-    mydb.commit()
-    mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobilet2.get()+'"')
-    mycursor.execute('SELECT User_id FROM tblNextOfKin WHERE Mobile="'+edtMobilet2.get()+'"')
-    row = mycursor.fetchall()
-    tblNextOfKin.insert("", 'end', values=(edtNamet2.get(), edtSurnamet2.get(), edtMobilet2.get(), row))
+        mydb.commit()
+        mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobilet2.get()+'"')
+        mycursor.execute('SELECT User_id FROM tblNextOfKin WHERE Mobile="'+edtMobilet2.get()+'"')
+        row = mycursor.fetchall()
+        tblNextOfKin.insert("", 'end', values=(edtNamet2.get(), edtSurnamet2.get(), edtMobilet2.get(), row))
+        messagebox.showinfo("", "Successfully added")
+    except:
+        messagebox.showerror("", "Failed to add")
 
 
 def updateKin():
-    selected = tblNextOfKin.focus()
-    temp = tblNextOfKin.item(selected, 'values')
-    tblNextOfKin.item(selected, values=(edtNamet2.get(), edtSurnamet2.get(), edtMobilet2.get(), temp[3]))
-    mycursor.execute('UPDATE tblNextOfKin SET Name="'+edtNamet2.get()+'", Surname="'+edtSurnamet2.get()+'", Mobile="'+edtMobilet2.get()+'" WHERE User_id='+edtUser_idt2.get())
-    mydb.commit()
+    try:
+        selected = tblNextOfKin.focus()
+        temp = tblNextOfKin.item(selected, 'values')
+        tblNextOfKin.item(selected, values=(edtNamet2.get(), edtSurnamet2.get(), edtMobilet2.get(), temp[3]))
+        mycursor.execute('UPDATE tblNextOfKin SET Name="'+edtNamet2.get()+'", Surname="'+edtSurnamet2.get()+'", Mobile="'+edtMobilet2.get()+'" WHERE User_id='+edtUser_idt2.get())
+        mydb.commit()
+        messagebox.showinfo("", "Successfully updated")
+    except:
+        messagebox.showerror("", "Failed to update")
 
 
 def clear():
@@ -169,6 +197,105 @@ def clear_kin():
     edtNamet2.delete(0, END)
     edtSurnamet2.delete(0, END)
     edtUser_idt2.delete(0, END)
+
+
+# FUNCTIONS TO COUNT AND DISPLAY THE PEOPLE WHO LOGGED IN AND LOGGED OUT
+def count_in():
+    edtCount_in.delete(0, END)
+    count = 0
+    for i in tblUser.get_children():
+        tblUser.delete(i)
+    mycursor.execute('SELECT * FROM tblUser WHERE logIn IS NOT NULL')
+    rows = mycursor.fetchall()
+    for row in rows:
+        count += 1
+        tblUser.insert("", tk.END, values=row)
+    edtCount_in.insert(0, count)
+
+
+def count_out():
+    edtCount_out.delete(0, END)
+    count = 0
+    for i in tblUser.get_children():
+        tblUser.delete(i)
+    mycursor.execute('SELECT * FROM tblUser WHERE logOut IS NOT NULL')
+    rows = mycursor.fetchall()
+    for row in rows:
+        count += 1
+        tblUser.insert("", tk.END, values=row)
+    edtCount_out.insert(0, count)
+
+
+def absent():
+    edtAbsent.delete(0, END)
+    count = 0
+    for i in tblUser.get_children():
+        tblUser.delete(i)
+    mycursor.execute('SELECT * FROM tblUser WHERE logIn IS NULL')
+    rows = mycursor.fetchall()
+    for row in rows:
+        count += 1
+        tblUser.insert("", tk.END, values=row)
+    edtAbsent.insert(0, count)
+
+
+def still_here():
+    edtHere.delete(0, END)
+    count = 0
+    for i in tblUser.get_children():
+        tblUser.delete(i)
+    mycursor.execute('SELECT * FROM tblUser WHERE logOut IS NULL')
+    rows = mycursor.fetchall()
+    for row in rows:
+        count += 1
+        tblUser.insert("", tk.END, values=row)
+    edtHere.insert(0, count)
+
+
+def get_notsigned():
+    mycursor.execute('SELECT Name, Surname FROM tblUser WHERE logOut IS NULL')
+    people = mycursor.fetchall()
+    list = []
+    for person in people:
+        user = f'{person[0]} {person[1]}'
+        list.append(user)
+    return list
+
+
+
+def get_email():
+    mycursor.execute('SELECT Email FROM tblAdmin')
+    emails = mycursor.fetchone()
+    return emails[0]
+
+
+#  =================SENDING EMAIL TO THE ADMIN============
+def send_email(email):
+    try:
+        sender_email_id = 'lottowinners957@gmail.com'
+        receiver_email_id = email
+        password = "GETRICHWITHLOTTO"
+        subject = "People who have not signed out"
+        msg = MIMEMultipart()
+        msg['From'] = sender_email_id
+        msg['To'] = receiver_email_id
+        msg['Subject'] = subject
+        people = ""
+        for i in get_notsigned():
+            people = f'{people}\n {i}'
+        body = f'Dear Admin\n \n This is a list of people who have not signed out today:\n {people}'
+        msg.attach(MIMEText(body, 'plain'))
+        text = msg.as_string()
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        s.login(sender_email_id, password)
+        s.sendmail(sender_email_id, receiver_email_id, text)
+        s.quit()
+    except ValueError:
+        messagebox.showinfo("", "Invalid email")
+
+
+# send_email(get_email())
 
 
 # =========================DISPLAYING IMAGE ON TAB1=====================
@@ -235,6 +362,26 @@ lbUser_idt1.place(x=10, y=100)
 edtUser_idt1 = Entry(lbFrame_visitor, width=10)
 edtUser_idt1.place(x=80, y=100)
 
+# ============BUTTON TO DISPLAY PEOPLE WHO LOGGED IN AND LOGGED OUT===============
+btnCheck_int1 = Button(tab1, text="LOGGED IN", command=count_in)
+btnCheck_int1.place(x=220, y=430)
+edtCount_in = Entry(tab1, width=5)
+edtCount_in.place(x=325, y=433)
+
+btnCheck_outt1 = Button(tab1, text="LOGGED OUT", command=count_out)
+btnCheck_outt1.place(x=380, y=430)
+edtCount_out = Entry(tab1, width=5)
+edtCount_out.place(x=500, y=433)
+
+btnHERE = Button(tab1, text="STILL HERE", command=still_here)
+btnHERE.place(x=555, y=430)
+edtHere = Entry(tab1, width=5)
+edtHere.place(x=660, y=433)
+
+btnAbsent = Button(tab1, text="ABSENT", command=absent)
+btnAbsent.place(x=720, y=430)
+edtAbsent = Entry(tab1, width=5)
+edtAbsent.place(x=800, y=433)
 
 #  ==========================================ADDING COMPONENTS ON A FRAME IN TAB2=================================================
 lbFrame_kin = LabelFrame(tab2, text="DATA", width=570, height=200)
@@ -276,6 +423,16 @@ btnInsertt2.place(x=185, y=130)
 btnCleart1 = Button(lbFrame_kin, text="CLEAR", command=clear_kin)
 btnCleart1.place(x=370, y=130)
 
+
+def exit():
+    root.destroy()
+
+
+btnExit = Button(tab1, text="EXIT", borderwidth=7, command=exit)
+btnExit.place(x=370, y=740)
+
+btnSend = Button(tab1, text="SEND EMAIL", borderwidth=5, font="Times 10", command=lambda: send_email(get_email()))
+btnSend.place(x=470, y=740)
 
 
 root.mainloop()

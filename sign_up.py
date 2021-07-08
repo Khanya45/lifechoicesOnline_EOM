@@ -2,6 +2,7 @@ import mysql.connector
 from tkinter import *
 from tkinter import messagebox
 from PIL import ImageTk, Image
+import rsaidnumber
 
 mydb = mysql.connector.connect(user='lifechoices', password='@Lifechoices1234', host='127.0.0.1', database='dbLifechoicesOnline', auth_plugin='mysql_native_password')
 mycursor = mydb.cursor(buffered=True)
@@ -11,13 +12,28 @@ root.title("VISITOR")
 root.geometry('700x550')
 
 
+# def validation():
+#     if (len(edtName.get()) != 0) or (edtSurname.get().isdigit() == False) or (edtSurname_kin.get().isdigit() == False) or (edtName_kin.get().isdigit() == False) or (edtName.get().isdigit() == False) or (edtMobile_kin.get().isdigit() == True) or (edtMobile.get().isdigit() == True) or (len(edtSurname.get()) != 0) or (len(edtName_kin.get()) != 0) or (len(edtSurname_kin.get()) != 0) or (len(edtMobile_kin.get()) == 10) or (len(edtMobile.get()) == 10):
+#         signup(edtID.get())
+#     else:
+#         messagebox.showerror("", "Please check if you inserted the correct info")
 
-def signup():
-    mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("'+edtName.get()+'","'+edtSurname.get()+'","'+edtID.get()+'","'+edtMobile.get()+'")')
-    mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile) VALUES ("'+edtName_kin.get()+'","'+edtSurname_kin.get()+'","'+edtMobile_kin.get()+'")')
-    mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobile_kin.get()+'"')
-    messagebox.showinfo("", "successfully added")
-    mydb.commit()
+
+def signup(id):
+    id_number = ""
+    try:
+        if (len(edtName.get()) != 0) or (edtSurname.get().isdigit() == False) or (edtSurname_kin.get().isdigit() == False) or (edtName_kin.get().isdigit() == False) or (edtName.get().isdigit() == False) or (edtMobile_kin.get().isdigit() == True) or (edtMobile.get().isdigit() == True) or (len(edtSurname.get()) != 0) or (len(edtName_kin.get()) != 0) or (len(edtSurname_kin.get()) != 0) or (len(edtMobile_kin.get()) == 10) or (len(edtMobile.get()) == 10):
+            id_number = rsaidnumber.parse(id)
+            mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("'+edtName.get()+'","'+edtSurname.get()+'","'+edtID.get()+'","'+edtMobile.get()+'")')
+            mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile) VALUES ("'+edtName_kin.get()+'","'+edtSurname_kin.get()+'","'+edtMobile_kin.get()+'")')
+            mycursor.execute('UPDATE tblUser SET logIn = current_time() WHERE ID="'+edtID.get()+'"')
+            mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobile_kin.get()+'"')
+            messagebox.showinfo("", "successfully added")
+            mydb.commit()
+        else:
+            messagebox.showerror("", "Please check if you inserted the correct info")
+    except:
+        messagebox.showerror("", "Invalid ID number")
 
 
 def exit():
@@ -79,7 +95,7 @@ edtMobile_kin = Entry(lbFrame_kin)
 edtMobile_kin.place(x=120, y=120)
 
 # ======== BUTTONS ON THE ROOT ===============
-btnLogin = Button(root, text="SIGN UP", command=signup)
+btnLogin = Button(root, text="SIGN UP", command=lambda: signup(edtID.get()))
 btnLogin.place(x=290, y=400)
 
 # btnLogin = Button(root, text="NEW VISITOR")

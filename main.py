@@ -18,6 +18,14 @@ logo2 = ImageTk.PhotoImage(resize2)
 lbpic2 = Label(root, image=logo2, bg='black')
 lbpic2.place(x=0, y=90)
 
+# def adminpage():
+#     root.destroy()
+#     import Admin
+#
+#
+# root.bind("Control-a>", adminpage)
+
+
 def admin():
     root.destroy()
     import Admin
