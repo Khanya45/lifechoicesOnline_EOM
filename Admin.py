@@ -26,17 +26,10 @@ def login():
         edtSurname.delete(0, END)
 
 
-# def newuser():
-#     count = 0
-#     mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("khanya", "gope","0210160451089","0814450796")')
-#     mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile,User_id) VALUES (("veronica", "gope","0823450796", SELECT User_id FROM tblUser WHERE ID= "+edtID.get()+"))')
-#     messagebox.showinfo("", "successfully added")
-#     mydb.commit()
-
 
 def new_window():
     root.destroy()
-    import main
+    import administrator
 
 
 def exit():
@@ -73,7 +66,7 @@ btnLogin = Button(root, text="LOG IN", command=login)
 btnLogin.place(x=130, y=330)
 
 btnLogin = Button(root, text="EXIT", command=exit)
-btnLogin.place(x=200, y=330)
+btnLogin.place(x=210, y=330)
 
 
 root.mainloop()

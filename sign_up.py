@@ -11,10 +11,11 @@ root.title("VISITOR")
 root.geometry('700x550')
 
 
+
 def signup():
     mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("'+edtName.get()+'","'+edtSurname.get()+'","'+edtID.get()+'","'+edtMobile.get()+'")')
     mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile) VALUES ("'+edtName_kin.get()+'","'+edtSurname_kin.get()+'","'+edtMobile_kin.get()+'")')
-    mycursor.execute('UPDATE tblUser SET User_id = (SELECT last_insert_id()) WHERE ID="'+edtID.get()+'"')
+    mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobile_kin.get()+'"')
     messagebox.showinfo("", "successfully added")
     mydb.commit()
 
