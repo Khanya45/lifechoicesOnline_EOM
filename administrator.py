@@ -17,7 +17,7 @@ root.geometry('1100x850')
 root.config(bg="#141215")
 
 
-# ===============Adding tabs on the window========================
+# ===============================Adding tabs on the window======================================
 tab_control = ttk.Notebook()
 tab1 = ttk.Frame(tab_control)
 tab_control.add(tab1, text="tblUser")
@@ -25,9 +25,51 @@ tab2 = ttk.Frame(tab_control)
 tab_control.add(tab2, text="tblNextOfKin")
 tab_control.pack(expan=1, fill="both")
 
-# ==================ADDING COMPONENTS ON THE TABS==================
 
-#  FUNCTION FOR DISPLAYING DATA ON THE WINDOW
+# ===========================================VALIDATIONS==========================================
+
+
+# VALIDATION FOR STRINGS
+def is_string(name, surname):
+    if name.isdigit() == False and surname.isdigit() == False:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+# VALIDATION FOR INTEGERS
+def is_number(mobile):
+    if mobile.isdigit() == True:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+# VALIDATION FOR LENGTH OF MOBILE
+def length(mobile):
+    if len(mobile) == 10:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+# VALIDATION FOR LENGTH OF STRINGS
+def string_length(name, surname):
+    flag = False
+    if len(name) != 0 and len(surname) != 0:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+# ======================================================ADDING COMPONENTS ON THE TABS======================================================
+
+
+# FUNCTION FOR DISPLAYING ALL DATA ON TREEVIEW
 def view_user():
     for i in tblUser.get_children():
         tblUser.delete(i)
@@ -37,20 +79,12 @@ def view_user():
         tblUser.insert("", tk.END, values=row)
 
 
-def view_kin():
-    for i in tblNextOfKin.get_children():
-        tblNextOfKin.delete(i)
-    mycursor.execute("SELECT * FROM tblNextOfKin")
-    rows = mycursor.fetchall()
-    for row in rows:
-        # print(row)
-        tblNextOfKin.insert("", tk.END, values=row)
-
-
 # ======================DISPLAYING TREEVIEW ON TAB2===========================
-tblNextOfKin = ttk.Treeview(tab2, column=("c1", "c2", "c3", "c4"), show='headings')
-
-sbt1 = Scrollbar(tab2, orient=VERTICAL)
+sb_frame2 = Frame(tab2, bg="black")
+sb_frame2.place(x=130, y=180)
+tblNextOfKin = ttk.Treeview(sb_frame2, selectmode="browse", column=("c1", "c2", "c3", "c4"), show='headings')
+tblNextOfKin.pack(side=LEFT)
+sbt1 = Scrollbar(sb_frame2, orient=VERTICAL)
 sbt1.pack(side=RIGHT, fill=Y)
 tblNextOfKin.config(yscrollcommand=sbt1.set)
 sbt1.config(command=tblNextOfKin.yview)
@@ -63,17 +97,31 @@ tblNextOfKin.column("#3", anchor=tk.CENTER)
 tblNextOfKin.heading("#3", text="MOBILE")
 tblNextOfKin.column("#4", anchor=tk.CENTER)
 tblNextOfKin.heading("#4", text="User_id")
-tblNextOfKin.place(x=120, y=190)
-btnKin = tk.Button(tab2, text="Display data", command=view_kin, borderwidth=7, width=50, font="Times 20")
-btnKin.place(x=160, y=420)
+
+#  FUNCTION FOR DISPLAYING DATA ON TREEVIEW
+mycursor.execute("SELECT * FROM tblNextOfKin")
+rows = mycursor.fetchall()
+for row in rows:
+    tblNextOfKin.insert("", tk.END, values=row)
+
+# STYLING TREEVIEW
 style = ttk.Style()
-style.theme_use("default")
+style.theme_use("alt")
+style.map("Treeview")
+
+style.configure("Treeview", rowheight=25)
 style.map("Treeview")
 
 
 # ============================DISPLAYING TREEVIEW ON TAB1============================
-tblUser = ttk.Treeview(tab1, column=("c1", "c2", "c3", "c4", "c5", "c6", "c7"), show='headings')
-sbt2 = Scrollbar(tab1, orient=VERTICAL)
+
+sb_frame = Frame(tab1, bg="black")
+sb_frame.place(x=40, y=150)
+
+tblUser = ttk.Treeview(sb_frame, selectmode="browse", column=("c1", "c2", "c3", "c4", "c5", "c6", "c7"), show='headings')
+tblUser.pack(side=LEFT)
+
+sbt2 = Scrollbar(sb_frame, orient=VERTICAL)
 sbt2.pack(side=RIGHT, fill=Y)
 tblUser.config(yscrollcommand=sbt2.set)
 sbt2.config(command=tblUser.yview)
@@ -92,11 +140,20 @@ tblUser.column("#5", anchor=tk.CENTER, width=150)
 tblUser.heading("#5", text="LOGIN")
 tblUser.column("#6", anchor=tk.CENTER, width=150)
 tblUser.heading("#6", text="LOGOUT")
-tblUser.place(x=40, y=190)
-btnKin = tk.Button(tab1, text="Display data", command=view_user)
+
+btnKin = tk.Button(tab1, text="Display all", command=view_user)
 btnKin.place(x=100, y=430)
 
-#  ==============================FUNCTIONS FOR ADDING DELETING AND DISPLAYING DATA IN TAB1=======================
+#  FUNCTION FOR DISPLAYING DATA ON TREEVIEW
+mycursor.execute("SELECT * FROM tblUser")
+rows = mycursor.fetchall()
+for row in rows:
+    tblUser.insert("", tk.END, values=row)
+
+
+#  =============================================FUNCTIONS FOR ALL THE BUTTONS ON THE WINDOW==============================
+
+# FUNCTION FOR DISPLAYING SELECTED RECORD TO THE ENTRIES
 def fetch_data_user():
     clear()
     selected = tblUser.focus()
@@ -108,47 +165,63 @@ def fetch_data_user():
     edtUser_idt1.insert(0, temp[6])
 
 
+# FUNCTION FOR DELETING A RECORD FROM BOTH TABLES
 def delete():
-    try:
-        mycursor.execute('DELETE FROM tblNextOfKin WHERE User_id='+edtUser_idt1.get())
-        mycursor.execute('DELETE FROM tblUser WHERE User_id='+edtUser_idt1.get())
-        mydb.commit()
-        row_id = tblUser.focus()
-        tblUser.delete(row_id)
-        messagebox.showinfo("", "successfully deleted")
-    except:
-        messagebox.showerror("", "Failed to delete the record")
+    if string_length(edtUser_idt1.get(), edtUser_idt1.get()) == False:
+        messagebox.showerror("", "Please select a record you want to delete, then click the data button")
+    else:
+        try:
+            mycursor.execute('DELETE FROM tblNextOfKin WHERE User_id='+edtUser_idt1.get())
+            mycursor.execute('DELETE FROM tblUser WHERE User_id='+edtUser_idt1.get())
+            mydb.commit()
+            row_id = tblUser.focus()
+            tblUser.delete(row_id)
+            messagebox.showinfo("", "successfully deleted")
+        except:
+            messagebox.showerror("", "Failed to delete the record")
 
 
+# FUNCTION FOR ADDING A NEW RECORD OF A USER
 def insert_user():
-    try:
-        mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("'+edtNamet1.get()+'","'+edtSurnamet1.get()+'","'+edtIDt1.get()+'","'+edtMobilet1.get()+'")')
-        tblUser.insert("", 'end', values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get()))
-        mydb.commit()
-        mycursor.execute('SELECT User_id FROM tblUser WHERE ID="'+edtIDt1.get()+'"')
-        row = mycursor.fetchall()
-        edtUser_idt1.insert(0, row)
-        messagebox.showinfo("", "Successfully added")
-    except:
-        messagebox.showerror("", "Failed to add the record")
+    if is_string(edtNamet1.get(), edtSurnamet1.get()) == False or string_length(edtNamet1.get(), edtSurnamet1.get()) == False:
+        messagebox.showerror("", "Invalid character on name or surname entry")
+    elif is_number(edtMobilet1.get()) == False or length(edtMobilet1.get()) == False:
+        messagebox.showerror("", "Invalid mobile number")
+    else:
+        try:
+            mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("'+edtNamet1.get()+'","'+edtSurnamet1.get()+'","'+edtIDt1.get()+'","'+edtMobilet1.get()+'")')
+            tblUser.insert("", 'end', values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get()))
+            mydb.commit()
+            mycursor.execute('SELECT User_id FROM tblUser WHERE ID="'+edtIDt1.get()+'"')
+            row = mycursor.fetchall()
+            edtUser_idt1.insert(0, row)
+            messagebox.showinfo("", "Successfully added")
+        except:
+            messagebox.showerror("", "Failed to add the record")
 
 
+# FUNCTION FOR EDITING A RECORD OF A USER
 def update_user():
-    try:
-        selected = tblUser.focus()
-        temp = tblUser.item(selected, 'values')
-        tblUser.item(selected, values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get(), temp[4], temp[5], temp[6]))
-        mycursor.execute('UPDATE tblUser SET Name="'+edtNamet1.get()+'", Surname="'+edtSurnamet1.get()+'", Mobile="'+edtMobilet1.get()+'", ID="'+edtIDt1.get()+'" WHERE User_id='+edtUser_idt1.get())
-        mydb.commit()
-        messagebox.showinfo("", "Successfully updated")
-    except:
-        messagebox.showerror("", "Failed to insert")
+    if is_string(edtNamet1.get(), edtSurnamet1.get()) == False or string_length(edtNamet1.get(), edtSurnamet1.get()) == False:
+        messagebox.showerror("", "Invalid character on name or surname entry")
+    elif is_number(edtMobilet1.get()) == False or length(edtMobilet1.get()) == False:
+        messagebox.showerror("", "Invalid mobile number")
+    else:
+        try:
+            selected = tblUser.focus()
+            temp = tblUser.item(selected, 'values')
+            tblUser.item(selected, values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get(), temp[4], temp[5], temp[6]))
+            mycursor.execute('UPDATE tblUser SET Name="'+edtNamet1.get()+'", Surname="'+edtSurnamet1.get()+'", Mobile="'+edtMobilet1.get()+'", ID="'+edtIDt1.get()+'" WHERE User_id='+edtUser_idt1.get())
+            mydb.commit()
+            messagebox.showinfo("", "Successfully updated")
+        except:
+            messagebox.showerror("", "Failed to insert")
 
 
 #  ==============================FUNCTIONS FOR ADDING DELETING AND DISPLAYING DATA IN TAB2=======================
 
 
-
+# FUNCTION FOR DISPLAYING SELECTED RECORD TO THE ENTRIES
 def fetch_data_kin():
     clear_kin()
     selected = tblNextOfKin.focus()
@@ -159,32 +232,45 @@ def fetch_data_kin():
     edtUser_idt2.insert(0, temp[3])
 
 
+# FUNCTION FOR ADDING A NEXT OF KIN TO THE DATABASE
 def insert_kin():
-    try:
-        mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile) VALUES ("'+edtNamet2.get()+'","'+edtSurnamet2.get()+'","'+edtMobilet2.get()+'")')
-    # mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobilet2.get()+'"')
-        mydb.commit()
-        mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobilet2.get()+'"')
-        mycursor.execute('SELECT User_id FROM tblNextOfKin WHERE Mobile="'+edtMobilet2.get()+'"')
-        row = mycursor.fetchall()
-        tblNextOfKin.insert("", 'end', values=(edtNamet2.get(), edtSurnamet2.get(), edtMobilet2.get(), row))
-        messagebox.showinfo("", "Successfully added")
-    except:
-        messagebox.showerror("", "Failed to add")
+    if is_string(edtNamet2.get(), edtSurnamet2.get()) == False or string_length(edtNamet2.get(), edtSurnamet2.get()) == False:
+        messagebox.showerror("", "Invalid character on name or surname entry")
+    elif is_number(edtMobilet2.get()) == False or length(edtMobilet2.get()) == False:
+        messagebox.showerror("", "Invalid mobile number")
+    else:
+        try:
+            mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile) VALUES ("'+edtNamet2.get()+'","'+edtSurnamet2.get()+'","'+edtMobilet2.get()+'")')
+            # mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobilet2.get()+'"')
+            mydb.commit()
+            mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobilet2.get()+'"')
+            mycursor.execute('SELECT User_id FROM tblNextOfKin WHERE Mobile="'+edtMobilet2.get()+'"')
+            row = mycursor.fetchall()
+            tblNextOfKin.insert("", 'end', values=(edtNamet2.get(), edtSurnamet2.get(), edtMobilet2.get(), row))
+            messagebox.showinfo("", "Successfully added")
+        except:
+            messagebox.showerror("", "Failed to add")
 
 
+# FUNCTION FOR EDITING A RECORD OF A NEXT OF KIN
 def update_kin():
-    try:
-        selected = tblNextOfKin.focus()
-        temp = tblNextOfKin.item(selected, 'values')
-        tblNextOfKin.item(selected, values=(edtNamet2.get(), edtSurnamet2.get(), edtMobilet2.get(), temp[3]))
-        mycursor.execute('UPDATE tblNextOfKin SET Name="'+edtNamet2.get()+'", Surname="'+edtSurnamet2.get()+'", Mobile="'+edtMobilet2.get()+'" WHERE User_id='+edtUser_idt2.get())
-        mydb.commit()
-        messagebox.showinfo("", "Successfully updated")
-    except:
-        messagebox.showerror("", "Failed to update")
+    if is_string(edtNamet2.get(), edtSurnamet2.get()) == False or string_length(edtNamet2.get(), edtSurnamet2.get()) == False:
+        messagebox.showerror("", "Invalid character on name or surname entry")
+    elif is_number(edtMobilet2.get()) == False or length(edtMobilet2.get()) == False:
+        messagebox.showerror("", "Invalid mobile number")
+    else:
+        try:
+            selected = tblNextOfKin.focus()
+            temp = tblNextOfKin.item(selected, 'values')
+            tblNextOfKin.item(selected, values=(edtNamet2.get(), edtSurnamet2.get(), edtMobilet2.get(), temp[3]))
+            mycursor.execute('UPDATE tblNextOfKin SET Name="'+edtNamet2.get()+'", Surname="'+edtSurnamet2.get()+'", Mobile="'+edtMobilet2.get()+'" WHERE User_id='+edtUser_idt2.get())
+            mydb.commit()
+            messagebox.showinfo("", "Successfully updated")
+        except:
+            messagebox.showerror("", "Failed to update")
 
 
+# FUNCTION FOR CLEARING ENTRIES OF THE USER FRAME ON TAB1
 def clear():
     edtIDt1.delete(0, END)
     edtMobilet1.delete(0, END)
@@ -193,6 +279,7 @@ def clear():
     edtUser_idt1.delete(0, END)
 
 
+# FUNCTION FOR CLEARING ENTRIES OF THE KIN FRAME ON TAB2
 def clear_kin():
     edtMobilet2.delete(0, END)
     edtNamet2.delete(0, END)
@@ -200,7 +287,15 @@ def clear_kin():
     edtUser_idt2.delete(0, END)
 
 
-# FUNCTIONS TO COUNT AND DISPLAY THE PEOPLE WHO LOGGED IN AND LOGGED OUT
+# FUNCTION FOR CLEARING ENTRIES OF THE ADMIN FRAME ON TAB2
+def clear_admin():
+    edtEmailf2.delete(0, END)
+    edtPasswordf2.delete(0, END)
+    edtSurnamef2.delete(0, END)
+    edtNamef2.delete(0, END)
+
+
+# ==============FUNCTIONS TO COUNT AND DISPLAY THE PEOPLE WHO LOGGED IN AND LOGGED OUT==================
 def count_in():
     edtCount_in.delete(0, END)
     count = 0
@@ -303,14 +398,19 @@ def exit():
 
 #  FUNCTION FOR ADDING NEW ADMIN
 def new_admin():
-    try:
-        mycursor.execute('INSERT INTO tblAdministrator (Name, Surname, Password, Email) VALUES ("'+edtNamef2.get()+'","'+edtSurnamef2.get()+'","'+edtPasswordf2.get()+'","'+edtEmailf2.get()+'")')
-        # mycursor.execute('DELETE FROM tblNextOfKin WHERE Name="'+edtNamef2.get()+'" AND Surname="'+edtNamef2.get()+'"')
-        # mycursor.execute('DELETE FROM tblUser WHERE Name="'+edtNamef2.get()+'" AND Surname="'+edtNamef2.get()+'"')
-        mydb.commit()
-        messagebox.showinfo("", "Successfully added")
-    except:
-        messagebox.showerror("", "Failed to add the record")
+    if is_string(edtNamef2.get(), edtSurnamef2.get()) == False or string_length(edtNamef2.get(), edtSurnamef2.get()) == False:
+        messagebox.showerror("", "Invalid character on name or surname entry")
+    elif string_length(edtPasswordf2.get(), edtEmailf2.get()) == False:
+        messagebox.showerror("", "Invalid character on name or surname entry")
+    else:
+        try:
+            mycursor.execute('INSERT INTO tblAdministrator (Name, Surname, Password, Email) VALUES ("'+edtNamef2.get()+'","'+edtSurnamef2.get()+'","'+edtPasswordf2.get()+'","'+edtEmailf2.get()+'")')
+            # mycursor.execute('DELETE FROM tblNextOfKin WHERE Name="'+edtNamef2.get()+'" AND Surname="'+edtNamef2.get()+'"')
+            # mycursor.execute('DELETE FROM tblUser WHERE Name="'+edtNamef2.get()+'" AND Surname="'+edtNamef2.get()+'"')
+            mydb.commit()
+            messagebox.showinfo("", "Successfully added")
+        except:
+            messagebox.showerror("", "Failed to add the record")
 
 
 # =========================DISPLAYING IMAGE ON TAB1=====================
@@ -331,7 +431,6 @@ lbpic2.place(x=0, y=0)
 #  ==========================================ADDING COMPONENTS ON A FRAME IN TAB1=================================================
 lbFrame_visitor = LabelFrame(tab1, text="DATA", width=570, height=200)
 lbFrame_visitor.place(x=40, y=500)
-# x=240, y=520
 
 lbNamet1 = Label(lbFrame_visitor, text="Name")
 lbNamet1.place(x=10, y=20)
@@ -383,27 +482,30 @@ lbFrame_admin = LabelFrame(tab1, text="NEW ADMIN", width=350, height=200)
 lbFrame_admin.place(x=650, y=500)
 
 lbNamef2 = Label(lbFrame_admin, text="Name")
-lbNamef2.place(x=10, y=10)
+lbNamef2.place(x=20, y=10)
 edtNamef2 = Entry(lbFrame_admin)
-edtNamef2.place(x=80, y=10)
+edtNamef2.place(x=90, y=10)
 
 lbSurnamef2 = Label(lbFrame_admin, text="Surname")
-lbSurnamef2.place(x=10, y=40)
+lbSurnamef2.place(x=20, y=40)
 edtSurnamef2 = Entry(lbFrame_admin)
-edtSurnamef2.place(x=80, y=40)
+edtSurnamef2.place(x=90, y=40)
 
 lbEmailf2 = Label(lbFrame_admin, text="Email")
-lbEmailf2.place(x=10, y=70)
+lbEmailf2.place(x=20, y=70)
 edtEmailf2 = Entry(lbFrame_admin)
-edtEmailf2.place(x=80, y=70)
+edtEmailf2.place(x=90, y=70)
 
 lbPasswordf2 = Label(lbFrame_admin, text="Password")
-lbPasswordf2.place(x=10, y=100)
+lbPasswordf2.place(x=20, y=100)
 edtPasswordf2 = Entry(lbFrame_admin)
-edtPasswordf2.place(x=80, y=100)
+edtPasswordf2.place(x=90, y=100)
 
 btnGrant = Button(lbFrame_admin, text="Add as admin", command=new_admin)
-btnGrant.place(x=20, y=130)
+btnGrant.place(x=70, y=140)
+
+btnClearf2 = Button(lbFrame_admin, text="CLEAR", command=clear_admin)
+btnClearf2.place(x=200, y=140)
 
 
 # ============BUTTON TO DISPLAY PEOPLE WHO LOGGED IN AND LOGGED OUT===============
@@ -429,7 +531,7 @@ edtAbsent.place(x=800, y=433)
 
 #  ==========================================ADDING COMPONENTS ON A FRAME IN TAB2=================================================
 lbFrame_kin = LabelFrame(tab2, text="DATA", width=570, height=200)
-lbFrame_kin.place(x=160, y=500)
+lbFrame_kin.place(x=220, y=500)
 
 lbNamet2 = Label(lbFrame_kin, text="Name")
 lbNamet2.place(x=10, y=20)
@@ -472,8 +574,5 @@ btnExit.place(x=370, y=740)
 
 btnSend = Button(tab1, text="SEND EMAIL", borderwidth=5, font="Times 10", command=lambda: send_email(get_email()))
 btnSend.place(x=470, y=740)
-
-
-
 
 root.mainloop()

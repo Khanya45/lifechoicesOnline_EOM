@@ -30,11 +30,11 @@ def visitor():
     import user_login
 
 
-btnAdmin = Button(root, text="ADMINISTRATOR", width=20, height=5, font="TIMES 15", command=admin)
+btnAdmin = Button(root, text="ADMINISTRATOR", width=20, height=5, font="TIMES 15", command=admin, bg="#141215", fg="white")
 # btnAdmin.bind("<Control-a>", admin)
 btnAdmin.place(x=40, y=220)
 
-btnUser = Button(root, text="LS VISITOR", width=20, height=5, font="TIMES 15", command=visitor)
+btnUser = Button(root, text="LS VISITOR", width=20, height=5, font="TIMES 15", command=visitor, bg="#141215", fg="white")
 btnUser.place(x=300, y=220)
 
 

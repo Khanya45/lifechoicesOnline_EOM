@@ -3,21 +3,21 @@ import rsaidnumber
 
 
 def verify():
-    id = rsaidnumber.parse('0210160451089')
-    return id.valid
+    id_number = rsaidnumber.parse('0210160451089')
+    return id_number.valid
 
 
 def is_string():
-        val = "khanya"
-        return val.isdigit()
+    val = "khanya"
+    return val.isdigit()
 
 
 def is_digit():
-        num = "67464"
-        return num.isdigit()
+    num = "67464"
+    return num.isdigit()
 
 
-class Data_Validation(unittest.TestCase):
+class dataValidation(unittest.TestCase):
     def setUp(self):
         a = rsaidnumber.parse('0210160451089')
 
@@ -36,24 +36,6 @@ class Data_Validation(unittest.TestCase):
 
     def test_integer(self):
         self.assertTrue(is_digit(), True)
-
-
-
-# def test_str():
-#         val = "khanya"
-#         return val.isdigit()
-#
-#
-# class validation(unittest.TestCase):
-#
-#     def is_string(self):
-#         val = "khanya"
-#         self.assertFalse(test_str(), False)
-#
-#
-#     def is_integer(self):
-#         num = "73920"
-#         self.assertTrue(num, True)
 
 
 if __name__ == '__main__':

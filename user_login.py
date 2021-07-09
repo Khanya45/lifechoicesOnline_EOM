@@ -9,6 +9,7 @@ mycursor = mydb.cursor(buffered=True)
 root = Tk()
 root.title("VISITOR")
 root.geometry('400x400')
+root.config(bg="#141215")
 
 
 def login():
@@ -58,29 +59,29 @@ logo = ImageTk.PhotoImage(resize)
 lbpic = Label(root, image=logo, bg='#f48c06')
 lbpic.place(x=0, y=0)
 
-lbHeading = Label(root, text="LOG IN", font='Times 30')
+lbHeading = Label(root, text="LOG IN", font='Times 30', bg="#141215", fg="white")
 lbHeading.place(x=130, y=120)
 
-lbID = Label(root, text="ID number")
+lbID = Label(root, text="ID number", bg="#141215", fg="white")
 lbID.place(x=40, y=230)
 edtID = Entry(root)
 edtID.place(x=150, y=230)
 
-lbSurname = Label(root, text="Visitor Name")
+lbSurname = Label(root, text="Visitor Name", bg="#141215", fg="white")
 lbSurname.place(x=40, y=190)
 edtSurname = Entry(root)
 edtSurname.place(x=150, y=190)
 
-btnLogin = Button(root, text="LOG IN", command=login)
+btnLogin = Button(root, text="LOG IN", command=login, bg="#141215", fg="white")
 btnLogin.place(x=50, y=300)
 
-btnNew = Button(root, text="NEW VISITOR", command=new_window)
+btnNew = Button(root, text="NEW VISITOR", command=new_window, bg="#141215", fg="white")
 btnNew.place(x=225, y=300)
 
-btnLogout = Button(root, text="LOG OUT", command=logout)
+btnLogout = Button(root, text="LOG OUT", command=logout, bg="#141215", fg="white")
 btnLogout.place(x=130, y=300)
 
-btnLogin = Button(root, text="EXIT", command=exit)
+btnLogin = Button(root, text="EXIT", command=exit, bg="#141215", fg="white")
 btnLogin.place(x=160, y=350)
 
 

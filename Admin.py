@@ -10,6 +10,9 @@ mycursor = mydb.cursor(buffered=True)
 root = Tk()
 root.title("ADMINISTRATOR")
 root.geometry('400x400')
+root.config(bg="#141215")
+
+
 def login():
     mycursor.execute('SELECT Name, Password FROM tblAdministrator WHERE Name="'+edtName.get()+'" AND Password="'+edtPassword.get()+'"')
     count = 0
@@ -41,30 +44,30 @@ logo = ImageTk.PhotoImage(resize)
 lbpic = Label(root, image=logo, bg='#f48c06')
 lbpic.place(x=0, y=0)
 
-lbHeading = Label(root, text="LOG IN", font='Times 30')
+lbHeading = Label(root, text="LOG IN", font='Times 30', bg="#141215", fg="white")
 lbHeading.place(x=130, y=120)
 
 
-lbName = Label(root, text="Admin Name")
+lbName = Label(root, text="Admin Name", bg="#141215", fg="white")
 lbName.place(x=40, y=190)
 edtName = Entry(root)
 edtName.place(x=150, y=190)
 
-lbSurname = Label(root, text="Admin Surname")
+lbSurname = Label(root, text="Admin Surname", bg="#141215", fg="white")
 lbSurname.place(x=40, y=230)
 edtSurname = Entry(root)
 edtSurname.place(x=150, y=230)
 
 
-lbPassword = Label(root, text="Password")
+lbPassword = Label(root, text="Password", bg="#141215", fg="white")
 lbPassword.place(x=40, y=270)
 edtPassword = Entry(root)
 edtPassword.place(x=150, y=270)
 
-btnLogin = Button(root, text="LOG IN", command=login)
+btnLogin = Button(root, text="LOG IN", command=login, bg="#141215", fg="white")
 btnLogin.place(x=130, y=330)
 
-btnLogin = Button(root, text="EXIT", command=exit)
+btnLogin = Button(root, text="EXIT", command=exit, bg="#141215", fg="white")
 btnLogin.place(x=210, y=330)
 
 # ======================VALIDATIONS===================
@@ -77,6 +80,9 @@ def is_string(name,surname):
     else:
         flag = False
     return flag
+
+
+# b1["state"] = DISABLED
 
 
 # VALIDATION FOR INTEGERS
@@ -111,14 +117,16 @@ def string_length(name, surname):
 
 if is_string("khanya3", "3455") == False or string_length("khan4ya", "534") == False:
     messagebox.showerror("", "Invalid character on name or surname entry")
-else:
-    messagebox.showinfo("", "correct")
-
-
-if is_number("364uyt498572") == False or length("7678765456") == False:
+elif is_number("364uyt498572") == False or length("7678765456") == False:
     messagebox.showerror("", "Invalid mobile number")
 else:
     messagebox.showinfo("", "correct")
+
+
+# if is_number("364uyt498572") == False or length("7678765456") == False:
+#     messagebox.showerror("", "Invalid mobile number")
+# else:
+#     messagebox.showinfo("", "correct")
 
 
 
