@@ -14,20 +14,21 @@ mycursor = mydb.cursor(buffered=True)
 root = Tk()
 root.title("VISITOR")
 root.geometry('1100x850')
+root.config(bg="#141215")
 
 
 # ===============Adding tabs on the window========================
-tabControl = ttk.Notebook()
-tab1 = ttk.Frame(tabControl)
-tabControl.add(tab1, text="tblUser")
-tab2 = ttk.Frame(tabControl)
-tabControl.add(tab2, text="tblNextOfKin")
-tabControl.pack(expan=1, fill="both")
+tab_control = ttk.Notebook()
+tab1 = ttk.Frame(tab_control)
+tab_control.add(tab1, text="tblUser")
+tab2 = ttk.Frame(tab_control)
+tab_control.add(tab2, text="tblNextOfKin")
+tab_control.pack(expan=1, fill="both")
 
 # ==================ADDING COMPONENTS ON THE TABS==================
 
 #  FUNCTION FOR DISPLAYING DATA ON THE WINDOW
-def ViewUser():
+def view_user():
     for i in tblUser.get_children():
         tblUser.delete(i)
     mycursor.execute("SELECT * FROM tblUser")
@@ -36,7 +37,7 @@ def ViewUser():
         tblUser.insert("", tk.END, values=row)
 
 
-def ViewKin():
+def view_kin():
     for i in tblNextOfKin.get_children():
         tblNextOfKin.delete(i)
     mycursor.execute("SELECT * FROM tblNextOfKin")
@@ -62,20 +63,20 @@ tblNextOfKin.column("#3", anchor=tk.CENTER)
 tblNextOfKin.heading("#3", text="MOBILE")
 tblNextOfKin.column("#4", anchor=tk.CENTER)
 tblNextOfKin.heading("#4", text="User_id")
-tblNextOfKin.place(x=40, y=190)
-btnKin = tk.Button(tab2, text="Display data", command=ViewKin)
-btnKin.place(x=100, y=430)
+tblNextOfKin.place(x=120, y=190)
+btnKin = tk.Button(tab2, text="Display data", command=view_kin, borderwidth=7, width=50, font="Times 20")
+btnKin.place(x=160, y=420)
 style = ttk.Style()
 style.theme_use("default")
 style.map("Treeview")
+
 
 # ============================DISPLAYING TREEVIEW ON TAB1============================
 tblUser = ttk.Treeview(tab1, column=("c1", "c2", "c3", "c4", "c5", "c6", "c7"), show='headings')
 sbt2 = Scrollbar(tab1, orient=VERTICAL)
 sbt2.pack(side=RIGHT, fill=Y)
-
-tblNextOfKin.config(yscrollcommand=sbt2.set)
-sbt2.config(command=tblNextOfKin.yview)
+tblUser.config(yscrollcommand=sbt2.set)
+sbt2.config(command=tblUser.yview)
 
 tblUser.column("#7", anchor=tk.CENTER, width=100)
 tblUser.heading("#7", text="User_id")
@@ -92,11 +93,11 @@ tblUser.heading("#5", text="LOGIN")
 tblUser.column("#6", anchor=tk.CENTER, width=150)
 tblUser.heading("#6", text="LOGOUT")
 tblUser.place(x=40, y=190)
-btnKin = tk.Button(tab1, text="Display data", command=ViewUser)
+btnKin = tk.Button(tab1, text="Display data", command=view_user)
 btnKin.place(x=100, y=430)
 
 #  ==============================FUNCTIONS FOR ADDING DELETING AND DISPLAYING DATA IN TAB1=======================
-def fetch_dataUser():
+def fetch_data_user():
     clear()
     selected = tblUser.focus()
     temp = tblUser.item(selected, 'values')
@@ -109,17 +110,17 @@ def fetch_dataUser():
 
 def delete():
     try:
+        mycursor.execute('DELETE FROM tblNextOfKin WHERE User_id='+edtUser_idt1.get())
+        mycursor.execute('DELETE FROM tblUser WHERE User_id='+edtUser_idt1.get())
+        mydb.commit()
         row_id = tblUser.focus()
         tblUser.delete(row_id)
-        mycursor.execute('DELETE FROM tblUser WHERE ID="'+edtIDt1.get()+'"')
-        mycursor.execute('DELETE FROM tblNextOfKin WHERE Mobile="'+edtMobilet2.get()+'"')
-        mydb.commit()
         messagebox.showinfo("", "successfully deleted")
     except:
         messagebox.showerror("", "Failed to delete the record")
 
 
-def insertUser():
+def insert_user():
     try:
         mycursor.execute('INSERT INTO tblUser (Name, Surname, ID,Mobile) VALUES ("'+edtNamet1.get()+'","'+edtSurnamet1.get()+'","'+edtIDt1.get()+'","'+edtMobilet1.get()+'")')
         tblUser.insert("", 'end', values=(edtNamet1.get(), edtSurnamet1.get(), edtIDt1.get(), edtMobilet1.get()))
@@ -132,7 +133,7 @@ def insertUser():
         messagebox.showerror("", "Failed to add the record")
 
 
-def updateUser():
+def update_user():
     try:
         selected = tblUser.focus()
         temp = tblUser.item(selected, 'values')
@@ -148,7 +149,7 @@ def updateUser():
 
 
 
-def fetch_dataKin():
+def fetch_data_kin():
     clear_kin()
     selected = tblNextOfKin.focus()
     temp = tblNextOfKin.item(selected, 'values')
@@ -158,7 +159,7 @@ def fetch_dataKin():
     edtUser_idt2.insert(0, temp[3])
 
 
-def insertKin():
+def insert_kin():
     try:
         mycursor.execute('INSERT INTO tblNextOfKin (Name, Surname,Mobile) VALUES ("'+edtNamet2.get()+'","'+edtSurnamet2.get()+'","'+edtMobilet2.get()+'")')
     # mycursor.execute('UPDATE tblNextOfKin SET User_id = (SELECT last_insert_id()) WHERE Mobile="'+edtMobilet2.get()+'"')
@@ -172,7 +173,7 @@ def insertKin():
         messagebox.showerror("", "Failed to add")
 
 
-def updateKin():
+def update_kin():
     try:
         selected = tblNextOfKin.focus()
         temp = tblNextOfKin.item(selected, 'values')
@@ -262,9 +263,9 @@ def get_notsigned():
     return list
 
 
-
+# FUNCTION TO GET AN EMAIL OF AN ADMIN THAT LAST LOGGED IN
 def get_email():
-    mycursor.execute('SELECT Email FROM tblAdmin')
+    mycursor.execute('SELECT Email FROM tblAdministrator ORDER BY logIn DESC')
     emails = mycursor.fetchone()
     return emails[0]
 
@@ -291,23 +292,37 @@ def send_email(email):
         s.login(sender_email_id, password)
         s.sendmail(sender_email_id, receiver_email_id, text)
         s.quit()
-    except ValueError:
+        messagebox.showinfo("", "Successfully sent an email")
+    except:
         messagebox.showinfo("", "Invalid email")
 
 
-# send_email(get_email())
+def exit():
+    root.destroy()
+
+
+#  FUNCTION FOR ADDING NEW ADMIN
+def new_admin():
+    try:
+        mycursor.execute('INSERT INTO tblAdministrator (Name, Surname, Password, Email) VALUES ("'+edtNamef2.get()+'","'+edtSurnamef2.get()+'","'+edtPasswordf2.get()+'","'+edtEmailf2.get()+'")')
+        # mycursor.execute('DELETE FROM tblNextOfKin WHERE Name="'+edtNamef2.get()+'" AND Surname="'+edtNamef2.get()+'"')
+        # mycursor.execute('DELETE FROM tblUser WHERE Name="'+edtNamef2.get()+'" AND Surname="'+edtNamef2.get()+'"')
+        mydb.commit()
+        messagebox.showinfo("", "Successfully added")
+    except:
+        messagebox.showerror("", "Failed to add the record")
 
 
 # =========================DISPLAYING IMAGE ON TAB1=====================
 pic1 = Image.open("Logo-Life-Choices.jpg")
-resize1 = pic1.resize((1100, 90), Image.ANTIALIAS)
+resize1 = pic1.resize((1100, 120), Image.ANTIALIAS)
 logo1 = ImageTk.PhotoImage(resize1)
 lbpic1 = Label(tab1, image=logo1)
 lbpic1.place(x=0, y=0)
 
 # ======================DISPLAYING IMAGE ON TAB2========================
 pic2 = Image.open("Logo-Life-Choices.jpg")
-resize2 = pic1.resize((1100, 90), Image.ANTIALIAS)
+resize2 = pic1.resize((1100, 120), Image.ANTIALIAS)
 logo2 = ImageTk.PhotoImage(resize2)
 lbpic2 = Label(tab2, image=logo2)
 lbpic2.place(x=0, y=0)
@@ -339,7 +354,7 @@ edtMobilet1 = Entry(lbFrame_visitor)
 edtMobilet1.place(x=350, y=60)
 
 # ==========BUTTON TO DISPLAY DATA TO ENTRIES==========
-btnDisplayt1 = Button(lbFrame_visitor, text="data", command=fetch_dataUser)
+btnDisplayt1 = Button(lbFrame_visitor, text="data", command=fetch_data_user)
 btnDisplayt1.place(x=40, y=130)
 
 # ==========BUTTON TO DELETE RECORD=================
@@ -347,20 +362,49 @@ btnDeletet1 = Button(lbFrame_visitor, text="DELETE", command=delete)
 btnDeletet1.place(x=100, y=130)
 
 # ==========BUTTON TO EDIT/UPDATE RECORD============
-btnUpdatet1 = Button(lbFrame_visitor, text="UPDATE", command=updateUser)
+btnUpdatet1 = Button(lbFrame_visitor, text="UPDATE", command=update_user)
 btnUpdatet1.place(x=180, y=130)
 
 # ==========BUTTON TO INSERT A NEW RECORD==========
-btnInsertt1 = Button(lbFrame_visitor, text="INSERT", command=insertUser)
+btnInsertt1 = Button(lbFrame_visitor, text="INSERT", command=insert_user)
 btnInsertt1.place(x=265, y=130)
 
 btnCleart1 = Button(lbFrame_visitor, text="CLEAR", command=clear)
-btnCleart1.place(x=370, y=130)
+btnCleart1.place(x=350, y=130)
 
 lbUser_idt1 = Label(lbFrame_visitor, text="User_id")
 lbUser_idt1.place(x=10, y=100)
 edtUser_idt1 = Entry(lbFrame_visitor, width=10)
 edtUser_idt1.place(x=80, y=100)
+
+
+#  =========================FRAME2 FOR NEW ADMIN =====================
+lbFrame_admin = LabelFrame(tab1, text="NEW ADMIN", width=350, height=200)
+lbFrame_admin.place(x=650, y=500)
+
+lbNamef2 = Label(lbFrame_admin, text="Name")
+lbNamef2.place(x=10, y=10)
+edtNamef2 = Entry(lbFrame_admin)
+edtNamef2.place(x=80, y=10)
+
+lbSurnamef2 = Label(lbFrame_admin, text="Surname")
+lbSurnamef2.place(x=10, y=40)
+edtSurnamef2 = Entry(lbFrame_admin)
+edtSurnamef2.place(x=80, y=40)
+
+lbEmailf2 = Label(lbFrame_admin, text="Email")
+lbEmailf2.place(x=10, y=70)
+edtEmailf2 = Entry(lbFrame_admin)
+edtEmailf2.place(x=80, y=70)
+
+lbPasswordf2 = Label(lbFrame_admin, text="Password")
+lbPasswordf2.place(x=10, y=100)
+edtPasswordf2 = Entry(lbFrame_admin)
+edtPasswordf2.place(x=80, y=100)
+
+btnGrant = Button(lbFrame_admin, text="Add as admin", command=new_admin)
+btnGrant.place(x=20, y=130)
+
 
 # ============BUTTON TO DISPLAY PEOPLE WHO LOGGED IN AND LOGGED OUT===============
 btnCheck_int1 = Button(tab1, text="LOGGED IN", command=count_in)
@@ -385,7 +429,7 @@ edtAbsent.place(x=800, y=433)
 
 #  ==========================================ADDING COMPONENTS ON A FRAME IN TAB2=================================================
 lbFrame_kin = LabelFrame(tab2, text="DATA", width=570, height=200)
-lbFrame_kin.place(x=40, y=500)
+lbFrame_kin.place(x=160, y=500)
 
 lbNamet2 = Label(lbFrame_kin, text="Name")
 lbNamet2.place(x=10, y=20)
@@ -409,30 +453,27 @@ edtMobilet2 = Entry(lbFrame_kin)
 edtMobilet2.place(x=350, y=60)
 
 # ==========BUTTON TO DISPLAY DATA TO ENTRIES==========
-btnDisplayt2 = Button(lbFrame_kin, text="data", command=fetch_dataKin)
-btnDisplayt2.place(x=40, y=130)
+btnDisplayt2 = Button(lbFrame_kin, text="data", command=fetch_data_kin)
+btnDisplayt2.place(x=95, y=130)
 
 # ==========BUTTON TO EDIT/UPDATE RECORD============
-btnUpdatet2 = Button(lbFrame_kin, text="UPDATE", command=updateKin)
-btnUpdatet2.place(x=100, y=130)
+btnUpdatet2 = Button(lbFrame_kin, text="UPDATE", command=update_kin)
+btnUpdatet2.place(x=155, y=130)
 
 # ==========BUTTON TO INSERT A NEW RECORD==========
-btnInsertt2 = Button(lbFrame_kin, text="INSERT", command=insertKin)
-btnInsertt2.place(x=185, y=130)
+btnInsertt2 = Button(lbFrame_kin, text="INSERT", command=insert_kin)
+btnInsertt2.place(x=240, y=130)
 
 btnCleart1 = Button(lbFrame_kin, text="CLEAR", command=clear_kin)
-btnCleart1.place(x=370, y=130)
-
-
-def exit():
-    root.destroy()
-
+btnCleart1.place(x=320, y=130)
 
 btnExit = Button(tab1, text="EXIT", borderwidth=7, command=exit)
 btnExit.place(x=370, y=740)
 
 btnSend = Button(tab1, text="SEND EMAIL", borderwidth=5, font="Times 10", command=lambda: send_email(get_email()))
 btnSend.place(x=470, y=740)
+
+
 
 
 root.mainloop()

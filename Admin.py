@@ -11,20 +11,19 @@ root = Tk()
 root.title("ADMINISTRATOR")
 root.geometry('400x400')
 def login():
-    mycursor.execute('SELECT Name, Password FROM tblAdmin WHERE Name="'+edtName.get()+'" AND Password="'+edtPassword.get()+'"')
+    mycursor.execute('SELECT Name, Password FROM tblAdministrator WHERE Name="'+edtName.get()+'" AND Password="'+edtPassword.get()+'"')
     count = 0
     try:
         for i in mycursor:
           count += 1
         if count > 0:
+            mycursor.execute('UPDATE tblAdministrator SET logIn=current_time() WHERE Password="'+edtPassword.get()+'"')
+            mydb.commit()
             new_window()
         else:
             messagebox.showerror("", "the info supplied is incorrect")
     except:
         messagebox.showerror("", "the info supplied is incorrect")
-        edtPassword.delete(0, END)
-        edtSurname.delete(0, END)
-
 
 
 def new_window():
@@ -67,6 +66,61 @@ btnLogin.place(x=130, y=330)
 
 btnLogin = Button(root, text="EXIT", command=exit)
 btnLogin.place(x=210, y=330)
+
+# ======================VALIDATIONS===================
+
+# VALIDATION FOR STRINGS
+def is_string(name,surname):
+    # flag = False
+    if name.isdigit() == False and surname.isdigit() == False:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+# VALIDATION FOR INTEGERS
+def is_number(mobile):
+    # flag = False
+    if mobile.isdigit() == True:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+# VALIDATION FOR LENGTH OF MOBILE
+def length(mobile):
+    # flag = False
+    if len(mobile) == 10:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+# VALIDATION FOR LENGTH OF STRINGS
+def string_length(name, surname):
+    flag = False
+    if len(name) != 0 and len(surname) != 0:
+        flag = True
+    else:
+        flag = False
+    return flag
+
+
+if is_string("khanya3", "3455") == False or string_length("khan4ya", "534") == False:
+    messagebox.showerror("", "Invalid character on name or surname entry")
+else:
+    messagebox.showinfo("", "correct")
+
+
+if is_number("364uyt498572") == False or length("7678765456") == False:
+    messagebox.showerror("", "Invalid mobile number")
+else:
+    messagebox.showinfo("", "correct")
+
+
 
 
 root.mainloop()

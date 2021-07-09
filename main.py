@@ -18,12 +18,6 @@ logo2 = ImageTk.PhotoImage(resize2)
 lbpic2 = Label(root, image=logo2, bg='black')
 lbpic2.place(x=0, y=90)
 
-# def adminpage():
-#     root.destroy()
-#     import Admin
-#
-#
-# root.bind("Control-a>", adminpage)
 
 
 def admin():
@@ -37,10 +31,12 @@ def visitor():
 
 
 btnAdmin = Button(root, text="ADMINISTRATOR", width=20, height=5, font="TIMES 15", command=admin)
+# btnAdmin.bind("<Control-a>", admin)
 btnAdmin.place(x=40, y=220)
 
-btnAdmin = Button(root, text="LS VISITOR", width=20, height=5, font="TIMES 15", command=visitor)
-btnAdmin.place(x=300, y=220)
+btnUser = Button(root, text="LS VISITOR", width=20, height=5, font="TIMES 15", command=visitor)
+btnUser.place(x=300, y=220)
+
 
 
 root.mainloop()
