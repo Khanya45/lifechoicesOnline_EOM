@@ -156,13 +156,16 @@ for row in rows:
 # FUNCTION FOR DISPLAYING SELECTED RECORD TO THE ENTRIES
 def fetch_data_user():
     clear()
-    selected = tblUser.focus()
-    temp = tblUser.item(selected, 'values')
-    edtNamet1.insert(0, temp[0],)
-    edtSurnamet1.insert(0, temp[1])
-    edtIDt1.insert(0, temp[2])
-    edtMobilet1.insert(0, temp[3])
-    edtUser_idt1.insert(0, temp[6])
+    try:
+        selected = tblUser.focus()
+        temp = tblUser.item(selected, 'values')
+        edtNamet1.insert(0, temp[0],)
+        edtSurnamet1.insert(0, temp[1])
+        edtIDt1.insert(0, temp[2])
+        edtMobilet1.insert(0, temp[3])
+        edtUser_idt1.insert(0, temp[6])
+    except:
+        messagebox.showerror("", "Select a record then click the data button")
 
 
 # FUNCTION FOR DELETING A RECORD FROM BOTH TABLES
@@ -224,12 +227,15 @@ def update_user():
 # FUNCTION FOR DISPLAYING SELECTED RECORD TO THE ENTRIES
 def fetch_data_kin():
     clear_kin()
-    selected = tblNextOfKin.focus()
-    temp = tblNextOfKin.item(selected, 'values')
-    edtNamet2.insert(0, temp[0],)
-    edtSurnamet2.insert(0, temp[1])
-    edtMobilet2.insert(0, temp[2])
-    edtUser_idt2.insert(0, temp[3])
+    try:
+        selected = tblNextOfKin.focus()
+        temp = tblNextOfKin.item(selected, 'values')
+        edtNamet2.insert(0, temp[0],)
+        edtSurnamet2.insert(0, temp[1])
+        edtMobilet2.insert(0, temp[2])
+        edtUser_idt2.insert(0, temp[3])
+    except:
+        messagebox.showerror("", "Select a record, then click the data button")
 
 
 # FUNCTION FOR ADDING A NEXT OF KIN TO THE DATABASE
@@ -574,5 +580,8 @@ btnExit.place(x=370, y=740)
 
 btnSend = Button(tab1, text="SEND EMAIL", borderwidth=5, font="Times 10", command=lambda: send_email(get_email()))
 btnSend.place(x=470, y=740)
+
+messagebox.showinfo("IMPORTANT!!!", "Please select a record on the database, then click the data button. And remember to do the same thing on the second tab")
+
 
 root.mainloop()
